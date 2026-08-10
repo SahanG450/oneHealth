@@ -1,0 +1,28 @@
+{
+  "name": "@onehealth/mobile",
+  "private": true,
+  "version": "0.1.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "react": "18.3.1",
+    "react-native": "0.74.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/native-stack": "^6.9.0",
+    "@tanstack/react-query": "^5.0.0",
+    "zustand": "^4.5.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "nativewind": "^4.0.0",
+    "i18next": "^23.0.0",
+    "react-i18next": "^14.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

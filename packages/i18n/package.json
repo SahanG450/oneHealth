@@ -1,0 +1,8 @@
+{
+  "name": "@onehealth/i18n",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "i18next": "^23.0.0"
+  }
+}

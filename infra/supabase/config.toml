@@ -1,0 +1,10 @@
+[api]
+port = 54321
+[db]
+port = 54322
+[auth]
+enabled = true
+[storage]
+enabled = true
+[realtime]
+enabled = true

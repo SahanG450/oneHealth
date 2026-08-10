@@ -1,0 +1,11 @@
+{
+  "name": "@onehealth/api-client",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "generate": "openapi-typescript-codegen --input ../../docs/openapi.json --output src/generated"
+  },
+  "devDependencies": {
+    "openapi-typescript-codegen": "^0.29.0"
+  }
+}
