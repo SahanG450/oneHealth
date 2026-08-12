@@ -1,0 +1,57 @@
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  BookingsScreen,
+  DoctorMobileHome,
+  HomeScreen,
+  ProfileScreen,
+  QueueScreen,
+  SearchScreen,
+} from "../features/screens";
+import { LoginScreen } from "../features/auth/LoginScreen";
+import { colors } from "../theme";
+
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function PatientTabs({ onLogout }: { onLogout: () => void }) {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.brand,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: { borderTopColor: colors.border },
+      }}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Queue" component={QueueScreen} />
+      <Tab.Screen name="Bookings" component={BookingsScreen} />
+      <Tab.Screen name="Profile">{() => <ProfileScreen onLogout={onLogout} />}</Tab.Screen>
+    </Tab.Navigator>
+  );
+}
+
+export function RootNavigator({
+  role,
+  onEnter,
+  onLogout,
+}: {
+  role: "PATIENT" | "DOCTOR" | null;
+  onEnter: (role: "PATIENT" | "DOCTOR") => void;
+  onLogout: () => void;
+}) {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {!role ? (
+        <Stack.Screen name="Login">{() => <LoginScreen onEnter={onEnter} />}</Stack.Screen>
+      ) : role === "DOCTOR" ? (
+        <Stack.Screen name="Doctor">{() => <DoctorMobileHome />}</Stack.Screen>
+      ) : (
+        <Stack.Screen name="Patient">{() => <PatientTabs onLogout={onLogout} />}</Stack.Screen>
+      )}
+    </Stack.Navigator>
+  );
+}

@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap");
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Manrope, ui-sans-serif, sans-serif;
+  color: #0f2744;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+.oh-auth-bg {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(28, 143, 224, 0.12), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(10, 58, 102, 0.08), transparent 55%),
+    #ffffff;
+}
+
+.oh-loader-ring {
+  fill: none;
+  stroke: #d9eefa;
+  stroke-width: 5;
+}
+
+.oh-loader-arc {
+  stroke: #1c8fe0;
+  transform-origin: 32px 32px;
+  animation: oh-spin 0.9s linear infinite;
+}
+
+.oh-loader-cross {
+  stroke: #0a3a66;
+}
+
+.oh-btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: oh-spin 0.7s linear infinite;
+}
+
+@keyframes oh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

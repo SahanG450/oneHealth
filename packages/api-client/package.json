@@ -1,11 +1,16 @@
 {
   "name": "@onehealth/api-client",
   "version": "0.1.0",
+  "private": true,
   "main": "src/index.ts",
-  "scripts": {
-    "generate": "openapi-typescript-codegen --input ../../docs/openapi.json --output src/generated"
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
   },
-  "devDependencies": {
-    "openapi-typescript-codegen": "^0.29.0"
+  "scripts": {
+    "generate": "echo \"Wire openapi-typescript-codegen when backend OpenAPI is published\""
+  },
+  "dependencies": {
+    "@onehealth/types": "*"
   }
 }

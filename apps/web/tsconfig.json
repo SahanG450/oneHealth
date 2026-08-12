@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@onehealth/api-client": ["../../packages/api-client/src/index.ts"],
+      "@onehealth/types": ["../../packages/types/src/index.ts"],
+      "@onehealth/ui-kit": ["../../packages/ui-kit/src/index.ts"],
+      "@onehealth/i18n": ["../../packages/i18n/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

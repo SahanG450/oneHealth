@@ -1,0 +1,15 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@onehealth/api-client": ["../../packages/api-client/src/index.ts"],
+      "@onehealth/types": ["../../packages/types/src/index.ts"],
+      "@/*": ["src/*"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"],
+  "exclude": ["node_modules", "metro.config.js"]
+}
