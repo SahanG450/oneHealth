@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { OhButton, OhInput, OhLogo } from "../../components/ui";
 import { colors } from "../../theme";
+import { signIn } from "./api";
 
 export function LoginScreen({ onEnter }: { onEnter: (role: "PATIENT" | "DOCTOR") => void }) {
   const [email, setEmail] = useState("");
