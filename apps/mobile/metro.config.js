@@ -3,6 +3,7 @@ const path = require("path");
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
+const mobileReact = path.resolve(projectRoot, "node_modules/react");
 
 const config = getDefaultConfig(projectRoot);
 
@@ -16,8 +17,18 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
-config.resolver.extraNodeModules = {
-  react: path.resolve(projectRoot, "node_modules/react"),
+// Force the whole native bundle to a single React instance (the Expo-compatible
+// 19.x) so hoisted packages (@react-navigation/core, zustand, react-freeze, ...)
+// can't resolve the root's React 18 and end up with a duplicate React copy.
+const defaultResolve = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === "react" || moduleName.startsWith("react/")) {
+    const filePath = require.resolve(moduleName, { paths: [mobileReact] });
+    return { type: "sourceFile", filePath };
+  }
+  return defaultResolve
+    ? defaultResolve(context, moduleName, platform)
+    : context.resolveRequest(context, moduleName, platform);
 };
 
 module.exports = config;
