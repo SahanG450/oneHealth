@@ -11,19 +11,34 @@ const redirectUri = makeRedirectUri({
 });
 
 export async function signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
     if (error) throw error;
 
-    const { data: profile, error: profileError } = await supabase
+    const { data: profiles, error: profileError } = await supabase
         .from("profiles")
         .select("role")
-        .eq("id",
-            data.user.id)
-        .single();
-
+        .eq("id", data.user.id);
+console.log("=========> ",data.user.id);
+const userid =  await supabase
+    .from("profiles")
+    .select("*");
+    console.log("=========> ",userid);
     if (profileError) throw profileError;
 
-    return { session: data.session, role: profile.role as Role };
+    if (!profiles || profiles.length === 0) {
+        throw new Error("Profile not found");
+    }
+
+    const profile = profiles[0];
+
+    return {
+        session: data.session,
+        role: profile.role as Role,
+    };
 }
 
 export interface SignUpPayload {
@@ -34,22 +49,35 @@ export interface SignUpPayload {
     role: Role;
 }
 
-export async function signUp({ email, password, fullName, phone, role }: SignUpPayload) {
+export async function signUp({
+                                 email,
+                                 password,
+                                 fullName,
+                                 phone,
+                                 role,
+                             }: SignUpPayload) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName, role } },
+        options: {
+            data: {
+                full_name: fullName,
+                role,
+                phone,
+            },
+        },
     });
+
     if (error) throw error;
-    if (!data.user) throw new Error("Sign up failed. Please try again.");
 
-    const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({ id: data.user.id, full_name: fullName, phone, role });
+    if (!data.user) {
+        throw new Error("Sign up failed. Please try again.");
+    }
 
-    if (profileError) throw profileError;
-
-    return { session: data.session, role };
+    return {
+        session: data.session,
+        role,
+    };
 }
 
 export interface GoogleSignInResult {
@@ -109,7 +137,7 @@ export async function googleSignIn(
         role = preferredRole;
         const { error: profileError } = await supabase
             .from("profiles")
-            .insert({ id: userId, full_name: fullName, role });
+            .upsert({ id: userId, full_name: fullName, role });
         if (profileError) throw profileError;
     }
 

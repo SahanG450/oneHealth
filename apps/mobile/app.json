@@ -24,13 +24,7 @@
       "package": "lk.onehealth.app"
     },
     "plugins": [
-      "expo-web-browser",
-      [
-        "expo-auth-session",
-        {
-          "scheme": "onehealth"
-        }
-      ]
+      "expo-web-browser"
     ]
   }
 }
