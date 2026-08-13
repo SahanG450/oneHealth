@@ -16,19 +16,21 @@ export function OhButton({
   onPress,
   variant = "primary",
   loading,
+  disabled,
   style,
 }: {
   title: string;
   onPress?: () => void;
   variant?: "primary" | "secondary";
   loading?: boolean;
+  disabled?: boolean;
   style?: ViewStyle;
 }) {
   const primary = variant === "primary";
   return (
     <Pressable
       onPress={onPress}
-      disabled={loading}
+      disabled={disabled || loading}
       style={[
         styles.btn,
         primary ? styles.btnPrimary : styles.btnSecondary,

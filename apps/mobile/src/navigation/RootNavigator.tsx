@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -10,6 +10,7 @@ import {
   SearchScreen,
 } from "../features/screens";
 import { LoginScreen } from "../features/auth/LoginScreen";
+import { SignupScreen } from "../features/auth/SignupScreen";
 import { colors } from "../theme";
 
 const Tab = createBottomTabNavigator();
@@ -43,10 +44,25 @@ export function RootNavigator({
   onEnter: (role: "PATIENT" | "DOCTOR") => void;
   onLogout: () => void;
 }) {
+  const [authScreen, setAuthScreen] = useState<"Login" | "Signup">("Login");
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!role ? (
-        <Stack.Screen name="Login">{() => <LoginScreen onEnter={onEnter} />}</Stack.Screen>
+        authScreen === "Signup" ? (
+          <Stack.Screen name="Signup">
+            {() => (
+              <SignupScreen
+                onEnter={onEnter}
+                onGoToLogin={() => setAuthScreen("Login")}
+              />
+            )}
+          </Stack.Screen>
+        ) : (
+          <Stack.Screen name="Login">
+            {() => <LoginScreen onEnter={onEnter} onGoToSignup={() => setAuthScreen("Signup")} />}
+          </Stack.Screen>
+        )
       ) : role === "DOCTOR" ? (
         <Stack.Screen name="Doctor">{() => <DoctorMobileHome />}</Stack.Screen>
       ) : (
