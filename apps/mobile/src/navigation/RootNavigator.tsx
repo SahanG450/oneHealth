@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -16,15 +17,27 @@ import { colors } from "../theme";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+const tabIcons: Record<string, { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
+  Home: { active: "home", inactive: "home-outline" },
+  Search: { active: "search", inactive: "search-outline" },
+  Queue: { active: "people", inactive: "people-outline" },
+  Bookings: { active: "calendar", inactive: "calendar-outline" },
+  Profile: { active: "person-circle", inactive: "person-circle-outline" },
+};
+
 function PatientTabs({ onLogout }: { onLogout: () => void }) {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: { borderTopColor: colors.border },
-      }}
+        tabBarIcon: ({ color, focused, size }) => {
+          const icon = tabIcons[route.name];
+          return <Ionicons name={focused ? icon.active : icon.inactive} size={size} color={color} />;
+        },
+      })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />
