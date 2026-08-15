@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,11 @@ public class DoctorSearchController {
             WebClient.Builder webClientBuilder,
             @Value("${supabase.url}") String supabaseUrl,
             @Value("${supabase.service-role-key}") String serviceRoleKey) {
+        if (!hasText(supabaseUrl) || !hasText(serviceRoleKey)) {
+            this.supabaseClient = null;
+            return;
+        }
+
         this.supabaseClient = webClientBuilder
                 .baseUrl(supabaseUrl + "/rest/v1")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + serviceRoleKey)
@@ -41,6 +47,12 @@ public class DoctorSearchController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String category,
             @RequestParam(required = false, name = "q") String searchText) {
+        if (supabaseClient == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in apps/backend/.env or environment variables.");
+        }
+
         String areaOrTown = firstText(area, town);
         String query = buildQuery(areaOrTown, name, category, searchText);
 
@@ -64,7 +76,7 @@ public class DoctorSearchController {
         addIlike(query, "category", category);
 
         if (hasText(searchText)) {
-            String value = encode("*" + searchText.trim() + "*");
+            String value = "*" + searchText.trim() + "*";
             query.append("&or=")
                     .append(encode("(" + String.join(",", List.of(
                             "town.ilike." + value,

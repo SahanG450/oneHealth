@@ -7,6 +7,10 @@
   </parent>
   <artifactId>onehealth-api</artifactId>
 
+  <properties>
+    <start-class>lk.onehealth.api.OneHealthApiApplication</start-class>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -17,4 +21,16 @@
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>lk.onehealth.api.OneHealthApiApplication</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

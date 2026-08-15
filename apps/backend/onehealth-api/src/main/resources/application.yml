@@ -1,9 +1,11 @@
 spring:
   application:
     name: onehealth-api
+  config:
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
 server:
   port: 8080
 supabase:
-  url: ${SUPABASE_URL}
-  jwks-uri: ${SUPABASE_URL}/auth/v1/keys
-  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY}
+  url: ${SUPABASE_URL:}
+  jwks-uri: ${SUPABASE_URL:}/auth/v1/keys
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
