@@ -4,19 +4,28 @@ import type { Role, UserProfile } from "@onehealth/types";
 import { api } from "@/lib/api";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 
+type RegisterPayload = {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+  nicNumber: string;
+  role: "PATIENT" | "DOCTOR";
+  specialization?: string;
+  slmcRegNo?: string;
+  certificateUrl?: string;
+  licenceUrl?: string;
+  verificationStatus?: "PENDING";
+  packageId?: string;
+};
+
 interface AuthState {
   user: UserProfile | null;
   bootstrapping: boolean;
   setUser: (user: UserProfile | null) => void;
   bootstrap: () => Promise<void>;
   login: (email: string, password: string) => Promise<UserProfile>;
-  register: (payload: {
-    email: string;
-    password: string;
-    fullName: string;
-    phone?: string;
-    role: "PATIENT" | "DOCTOR";
-  }) => Promise<UserProfile>;
+  register: (payload: RegisterPayload) => Promise<UserProfile>;
   logout: () => Promise<void>;
   /** Demo-only helper when Supabase is not configured */
   demoLogin: (role: Role) => void;
@@ -111,7 +120,20 @@ export const useAuthStore = create<AuthState>()(
         const { error } = await supabase.auth.signUp({
           email: payload.email,
           password: payload.password,
-          options: { data: { full_name: payload.fullName, role: payload.role } },
+          options: {
+            data: {
+              full_name: payload.fullName,
+              phone: payload.phone,
+              nic_number: payload.nicNumber,
+              role: payload.role,
+              specialization: payload.specialization,
+              slmc_reg_no: payload.slmcRegNo,
+              certificate_url: payload.certificateUrl,
+              licence_url: payload.licenceUrl,
+              verification_status: payload.verificationStatus,
+              package_id: payload.packageId,
+            },
+          },
         });
         if (error) throw error;
         await api.register(payload);

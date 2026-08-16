@@ -15,7 +15,13 @@ export function SignupScreen({
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [nicNumber, setNicNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [slmcRegNo, setSlmcRegNo] = useState("");
+  const [certificateUrl, setCertificateUrl] = useState("");
+  const [licenceUrl, setLicenceUrl] = useState("");
+  const [packageId, setPackageId] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -32,18 +38,39 @@ export function SignupScreen({
   };
 
   const handleSignUp = async () => {
-    if (!fullName || !email || !password) {
-      Alert.alert("Missing info", "Please fill in name, email and password");
+    if (!fullName || !email || !nicNumber || !password) {
+      Alert.alert("Missing info", "Please fill in name, email, NIC number and password");
       return;
     }
     if (password.length < 8) {
       Alert.alert("Weak password", "Password must be at least 8 characters");
       return;
     }
+    if (role === "DOCTOR" && (!specialization || !slmcRegNo || !certificateUrl || !licenceUrl || !packageId)) {
+      Alert.alert("Missing doctor details", "Please fill in all doctor verification details");
+      return;
+    }
 
     setLoading(true);
     try {
-      await signUp({ email, password, fullName, phone, role });
+      await signUp({
+        email,
+        password,
+        fullName,
+        phone,
+        nicNumber,
+        role,
+        ...(role === "DOCTOR"
+          ? {
+              specialization,
+              slmcRegNo,
+              certificateUrl,
+              licenceUrl,
+              packageId,
+              verificationStatus: "PENDING",
+            }
+          : {}),
+      });
       onEnter(role as Role);
     } catch (err: any) {
       Alert.alert("Sign up failed", err.message ?? "Please check your details and try again");
@@ -100,6 +127,59 @@ export function SignupScreen({
             editable={!loading}
             placeholder="+94…"
           />
+          <OhInput
+            label="NIC number"
+            autoCapitalize="characters"
+            value={nicNumber}
+            onChangeText={setNicNumber}
+            editable={!loading}
+            placeholder="NIC number"
+          />
+          {role === "DOCTOR" ? (
+            <View style={styles.doctorBox}>
+              <Text style={styles.doctorTitle}>Doctor verification details</Text>
+              <OhInput
+                label="Specialization"
+                value={specialization}
+                onChangeText={setSpecialization}
+                editable={!loading}
+                placeholder="Cardiology, Dermatology, Pediatrics..."
+              />
+              <OhInput
+                label="SLMC registration number"
+                value={slmcRegNo}
+                onChangeText={setSlmcRegNo}
+                editable={!loading}
+                placeholder="SLMC registration number"
+              />
+              <OhInput
+                label="Certificate URL"
+                autoCapitalize="none"
+                keyboardType="url"
+                value={certificateUrl}
+                onChangeText={setCertificateUrl}
+                editable={!loading}
+                placeholder="https://..."
+              />
+              <OhInput
+                label="Licence URL"
+                autoCapitalize="none"
+                keyboardType="url"
+                value={licenceUrl}
+                onChangeText={setLicenceUrl}
+                editable={!loading}
+                placeholder="https://..."
+              />
+              <OhInput
+                label="Package ID"
+                autoCapitalize="none"
+                value={packageId}
+                onChangeText={setPackageId}
+                editable={!loading}
+                placeholder="Package ID"
+              />
+            </View>
+          ) : null}
           <OhInput
             label="Password"
             secureTextEntry
@@ -165,6 +245,15 @@ const styles = StyleSheet.create({
   },
   roleText: { fontSize: 14, fontWeight: "700", color: colors.muted },
   roleTextActive: { color: colors.brandDark },
+  doctorBox: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+    backgroundColor: colors.brandSoft,
+  },
+  doctorTitle: { color: colors.ink, fontWeight: "800", fontSize: 14, marginBottom: 10 },
   linkRow: { marginTop: 18, alignItems: "center" },
   linkText: { color: colors.muted, fontWeight: "600", fontSize: 14 },
   linkAccent: { color: colors.brand, fontWeight: "800" },

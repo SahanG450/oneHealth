@@ -101,8 +101,14 @@ export function createApiClient(options: ApiClientOptions) {
       password: string;
       fullName: string;
       phone?: string;
+      nicNumber: string;
       role: "PATIENT" | "DOCTOR";
-      slmcNumber?: string;
+      specialization?: string;
+      slmcRegNo?: string;
+      certificateUrl?: string;
+      licenceUrl?: string;
+      verificationStatus?: "PENDING";
+      packageId?: string;
     }) => request<UserProfile>("POST", "/auth/register", payload),
 
     /** GET /api/v1/doctors/search?q=&city=&specialization= */

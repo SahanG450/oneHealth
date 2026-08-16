@@ -92,7 +92,7 @@ public class DoctorSearchController {
             query.append('&')
                     .append(column)
                     .append("=ilike.")
-                    .append(encode("*" + value.trim() + "*"));
+                    .append(encode(    "*" + value.trim() + "*"));
         }
     }
 

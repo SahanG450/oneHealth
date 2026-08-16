@@ -1,8 +1,10 @@
 import React from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -10,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme";
 import { Image } from 'react-native';
+import type { DoctorSummary } from "@onehealth/types";
+import { searchDoctors } from "./search-doctors/api";
 
 // ---- Static content (swap for API data later) ----
 const SERVICES = [
@@ -171,7 +175,88 @@ function SectionHeader({ title, action }: { title: string; action?: string }) {
 }
 
 export function SearchScreen() {
-  return <PlaceholderScreen title="Search" subtitle="Find doctors, dispensaries, and medicines." />;
+  const [query, setQuery] = React.useState("");
+  const [doctors, setDoctors] = React.useState<DoctorSummary[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function loadDoctors() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await searchDoctors({ q: query.trim(), size: 20 });
+        if (!cancelled) setDoctors(result.items);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to search doctors.");
+          setDoctors([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    const timer = setTimeout(loadDoctors, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  return (
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <View style={styles.searchScreenContent}>
+          <Text style={styles.placeholderTitle}>Find Doctors</Text>
+          <Text style={styles.placeholderSubtitle}>Search by doctor name, city, or specialization.</Text>
+
+          <View style={styles.searchInputWrap}>
+            <Ionicons name="search-outline" size={18} color={colors.muted} />
+            <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Search doctors"
+                placeholderTextColor={colors.muted}
+                style={styles.searchInput}
+                autoCorrect={false}
+                returnKeyType="search"
+            />
+          </View>
+
+          {loading ? (
+              <ActivityIndicator color={colors.brand} style={styles.searchState} />
+          ) : error ? (
+              <Text style={[styles.searchState, styles.searchError]}>{error}</Text>
+          ) : doctors.length === 0 ? (
+              <Text style={styles.searchState}>No doctors found.</Text>
+          ) : (
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.searchResults}>
+                {doctors.map((doctor) => (
+                    <View key={doctor.id} style={styles.searchDoctorCard}>
+                      <View style={styles.searchDoctorAvatar}>
+                        <Ionicons name="person" size={24} color={colors.brand} />
+                      </View>
+                      <View style={styles.searchDoctorInfo}>
+                        <Text style={styles.searchDoctorName}>{doctor.fullName}</Text>
+                        <Text style={styles.searchDoctorSpec}>{doctor.specialization}</Text>
+                        <Text style={styles.searchDoctorMeta}>
+                          {[doctor.town, doctor.city].filter(Boolean).join(", ")}
+                        </Text>
+                      </View>
+                      <View style={styles.searchRatingPill}>
+                        <Ionicons name="star" size={12} color="#f59e0b" />
+                        <Text style={styles.searchRatingText}>{doctor.averageRating.toFixed(1)}</Text>
+                      </View>
+                    </View>
+                ))}
+              </ScrollView>
+          )}
+        </View>
+      </SafeAreaView>
+  );
 }
 
 export function QueueScreen() {
@@ -268,6 +353,55 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   searchPlaceholder: { color: colors.muted, fontSize: 14 },
+  searchScreenContent: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
+  searchInputWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    height: 48,
+    marginTop: 20,
+    gap: 8,
+  },
+  searchInput: { flex: 1, color: colors.ink, fontSize: 15, paddingVertical: 0 },
+  searchState: { marginTop: 24, color: colors.muted, fontSize: 15 },
+  searchError: { color: colors.danger },
+  searchResults: { paddingTop: 18, paddingBottom: 24 },
+  searchDoctorCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    backgroundColor: colors.white,
+  },
+  searchDoctorAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.brandSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  searchDoctorInfo: { flex: 1 },
+  searchDoctorName: { color: colors.ink, fontSize: 15, fontWeight: "800" },
+  searchDoctorSpec: { color: colors.brand, fontSize: 13, fontWeight: "700", marginTop: 2 },
+  searchDoctorMeta: { color: colors.muted, fontSize: 12, marginTop: 2 },
+  searchRatingPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 999,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    gap: 3,
+  },
+  searchRatingText: { color: colors.ink, fontSize: 12, fontWeight: "800" },
 
   grid: {
     flexDirection: "row",

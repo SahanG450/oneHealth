@@ -10,7 +10,13 @@ export function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [nicNumber, setNicNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [slmcRegNo, setSlmcRegNo] = useState("");
+  const [certificateUrl, setCertificateUrl] = useState("");
+  const [licenceUrl, setLicenceUrl] = useState("");
+  const [packageId, setPackageId] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +25,24 @@ export function RegisterPage() {
     setLoading(true);
     setError("");
     try {
-      const user = await register({ email, password, fullName, phone, role });
+      const user = await register({
+        email,
+        password,
+        fullName,
+        phone,
+        nicNumber,
+        role,
+        ...(role === "DOCTOR"
+          ? {
+              specialization,
+              slmcRegNo,
+              certificateUrl,
+              licenceUrl,
+              packageId,
+              verificationStatus: "PENDING",
+            }
+          : {}),
+      });
       navigate(homePathForRole(user.role));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -61,6 +84,42 @@ export function RegisterPage() {
         <Input label="Full name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
         <Input label="Email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+94…" />
+        <Input label="NIC number" required value={nicNumber} onChange={(e) => setNicNumber(e.target.value)} />
+        {role === "DOCTOR" ? (
+          <div className="space-y-4 rounded-2xl border border-surface-border bg-surface-muted/40 p-4">
+            <p className="text-sm font-semibold text-ink">Doctor verification details</p>
+            <Input
+              label="Specialization"
+              required
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+              placeholder="Cardiology, Dermatology, Pediatrics…"
+            />
+            <Input
+              label="SLMC registration number"
+              required
+              value={slmcRegNo}
+              onChange={(e) => setSlmcRegNo(e.target.value)}
+            />
+            <Input
+              label="Certificate URL"
+              type="url"
+              required
+              value={certificateUrl}
+              onChange={(e) => setCertificateUrl(e.target.value)}
+              placeholder="https://…"
+            />
+            <Input
+              label="Licence URL"
+              type="url"
+              required
+              value={licenceUrl}
+              onChange={(e) => setLicenceUrl(e.target.value)}
+              placeholder="https://…"
+            />
+            <Input label="Package ID" required value={packageId} onChange={(e) => setPackageId(e.target.value)} />
+          </div>
+        ) : null}
         <Input
           label="Password"
           type="password"

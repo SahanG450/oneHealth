@@ -46,16 +46,30 @@ export interface SignUpPayload {
     password: string;
     fullName: string;
     phone?: string;
+    nicNumber: string;
     role: Role;
+    specialization?: string;
+    slmcRegNo?: string;
+    certificateUrl?: string;
+    licenceUrl?: string;
+    verificationStatus?: "PENDING";
+    packageId?: string;
 }
 
 export async function signUp({
                                  email,
                                  password,
-                                 fullName,
-                                 phone,
-                                 role,
-                             }: SignUpPayload) {
+                                  fullName,
+                                  phone,
+                                  nicNumber,
+                                  role,
+                                  specialization,
+                                  slmcRegNo,
+                                  certificateUrl,
+                                  licenceUrl,
+                                  verificationStatus,
+                                  packageId,
+                              }: SignUpPayload) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -64,6 +78,13 @@ export async function signUp({
                 full_name: fullName,
                 role,
                 phone,
+                nic_number: nicNumber,
+                specialization,
+                slmc_reg_no: slmcRegNo,
+                certificate_url: certificateUrl,
+                licence_url: licenceUrl,
+                verification_status: verificationStatus,
+                package_id: packageId,
             },
         },
     });
